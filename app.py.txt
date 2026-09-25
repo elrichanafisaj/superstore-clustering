@@ -1,0 +1,40 @@
+# Mengimpor library yang dibutuhkan untuk membuat aplikasi dan menggunakan model
+import streamlit as st
+import pandas as pd
+import joblib
+
+# Memuat model K-Means dan scaler yang sudah dilatih sebelumnya
+kmeans = joblib.load("kmeans_model.pkl")
+scaler = joblib.load("scaler.pkl")
+
+# Menampilkan judul aplikasi
+st.title("Superstore Sales Clustering")
+
+# Menampilkan penjelasan singkat aplikasi
+st.write("Aplikasi untuk mengelompokkan transaksi penjualan berdasarkan karakteristiknya.")
+
+# Membuat input untuk variabel yang digunakan dalam clustering
+sales = st.number_input("Sales", min_value=0.0)
+quantity = st.number_input("Quantity", min_value=0)
+discount = st.number_input("Discount", min_value=0.0)
+profit = st.number_input("Profit")
+
+# Menjalankan prediksi ketika tombol ditekan
+if st.button("Prediksi Cluster"):
+
+    # Membuat DataFrame berdasarkan data yang dimasukkan pengguna
+    input_data = pd.DataFrame({
+        "Sales": [sales],
+        "Quantity": [quantity],
+        "Discount": [discount],
+        "Profit": [profit]
+    })
+
+    # Melakukan standardisasi menggunakan scaler yang sama dengan saat training
+    input_scaled = scaler.transform(input_data)
+
+    # Memprediksi cluster berdasarkan model K-Means
+    prediction = kmeans.predict(input_scaled)
+
+    # Menampilkan hasil cluster
+    st.success(f"Transaksi termasuk ke dalam Cluster {prediction[0]}")
